@@ -5,113 +5,74 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TransactionRepositoryTest {
 
     private TransactionRepository transactionRepository;
+    private Transaction transaction1;
+    private Transaction transaction2;
+    private Transaction transaction3;
+    private Transaction transaction4;
+    private Transaction transaction5;
 
     @BeforeEach
     void setUp() {
         transactionRepository = new TransactionRepository();
+        transaction1 = new Transaction(1, 10.0, "cars");
+        transaction2 = new Transaction(2, 10.0, "house", 1);
+        transaction3 = new Transaction(3, 20.0, "cars");
+        transaction4 = new Transaction(4, 30.0, "cars", 1);
+        transaction5 = new Transaction(5, 10.0, "cars", 3);
     }
 
     @Test
     void addShouldSaveGivenTransactionToRepository() {
-        Transaction transaction = new Transaction(1, 10.0, "cars");
-        transactionRepository.add(transaction);
-        assert(true);
+        transactionRepository.createTransaction(transaction1);
+        assertThat(transactionRepository.getTransactionById(1));
     }
 
     @Test
     void addShouldSaveGivenTransactionWithParenId(){
-        Transaction transaction = new Transaction(1, 10.0, "cars", 1);
-        transactionRepository.add(transaction);
+        transactionRepository.createTransaction(transaction2);
+        assertThat(transactionRepository.getTransactionById(2));
     }
 
     @Test
     void getTransactionByIdShouldReturnTransactionByGivenId(){
-        Transaction expectedTransaction = new Transaction(1, 10.0, "cars");
-        transactionRepository.add(expectedTransaction);
-
-        Transaction actualTransaction = transactionRepository.getTransactionById(1);
-
-        assertEquals(expectedTransaction, actualTransaction);
-    }
-
-    @Test
-    void getLinkedTransactionsShouldReturnListOfLinkedTransactions(){
-        Transaction transaction1 = new Transaction(1, 10.0, "cars");
-        transactionRepository.add(transaction1);
-        Transaction transaction2 = new Transaction(2, 10.0, "cars", 1);
-        transactionRepository.add(transaction2);
-
-        ArrayList<Long> expectedList = new ArrayList<Long>();
-        expectedList.add((long) 1);
-        expectedList.add((long) 2);
-
-        assertEquals(expectedList, transactionRepository.getAllLinkedTransactions(1));
-    }
-
-    @Test
-    void getLinkedTransactionsShouldReturnListOfAllLinkedTransactions(){
-        Transaction transaction1 = new Transaction(1, 10.0, "cars");
-        transactionRepository.add(transaction1);
-        Transaction transaction2 = new Transaction(2, 10.0, "cars", 1);
-        transactionRepository.add(transaction2);
-        Transaction transaction3 = new Transaction(3, 10.0, "cars", 2);
-        transactionRepository.add(transaction3);
-
-        ArrayList<Long> expectedList = new ArrayList<Long>();
-        expectedList.add((long) 1);
-        expectedList.add((long) 2);
-        expectedList.add((long) 3);
-
-        LinkedList<Long> actualList = transactionRepository.getAllLinkedTransactions(1);
-        assertEquals(expectedList, actualList);
-    }
-
-    @Test
-    void getLinkedTransactionsShouldReturnListOfAllNestedLinkedTransactions(){
-        Transaction transaction1 = new Transaction(1, 10.0, "cars");
-        transactionRepository.add(transaction1);
-        Transaction transaction2 = new Transaction(2, 10.0, "cars", 1);
-        transactionRepository.add(transaction2);
-        Transaction transaction3 = new Transaction(3, 10.0, "cars", 2);
-        transactionRepository.add(transaction3);
-        Transaction transaction4 = new Transaction(4, 10.0, "cars", 2);
-        transactionRepository.add(transaction4);
-        Transaction transaction5 = new Transaction(5, 10.0, "cars", 3);
-        transactionRepository.add(transaction5);
-
-        ArrayList<Long> expectedList = new ArrayList<Long>();
-        expectedList.add((long) 1);
-        expectedList.add((long) 2);
-        expectedList.add((long) 3);
-        expectedList.add((long) 5);
-        expectedList.add((long) 4);
-
-        LinkedList<Long> actualList = transactionRepository.getAllLinkedTransactions(1);
-        assertEquals(expectedList, actualList);
+        transactionRepository.createTransaction(transaction1);
+        assertThat(transactionRepository.getTransactionById(1));
     }
 
     @Test
     void getSumShouldReturnSumOfAllTransactionAmounts(){
-        Transaction transaction1 = new Transaction(1, 10.0, "cars");
-        transactionRepository.add(transaction1);
-        Transaction transaction2 = new Transaction(2, 10.0, "cars", 1);
-        transactionRepository.add(transaction2);
-        Transaction transaction3 = new Transaction(3, 10.0, "cars", 2);
-        transactionRepository.add(transaction3);
-        Transaction transaction4 = new Transaction(4, 10.0, "cars", 2);
-        transactionRepository.add(transaction4);
-        Transaction transaction5 = new Transaction(5, 10.0, "cars", 3);
-        transactionRepository.add(transaction5);
+        transactionRepository.createTransaction(transaction1);
+        transactionRepository.createTransaction(transaction2);
+        transactionRepository.createTransaction(transaction3);
+        transactionRepository.createTransaction(transaction4);
+        transactionRepository.createTransaction(transaction5);
 
-        assertEquals(50.0, transactionRepository.getSum((long)1));
+        assertEquals(50.0, transactionRepository.getTransactionAmount((long)1));
     }
+
+    @Test
+    void getTransactionByTypeShouldReturnTransactionIdForGivenType(){
+        transactionRepository.createTransaction(transaction1);
+        transactionRepository.createTransaction(transaction2);
+        transactionRepository.createTransaction(transaction3);
+        transactionRepository.createTransaction(transaction4);
+
+        ArrayList<Long> expectedTransactions = new ArrayList<>();
+        expectedTransactions.add((long) 1);
+        expectedTransactions.add((long) 3);
+        expectedTransactions.add((long) 4);
+
+        ArrayList<Long> actualTransactions;
+        actualTransactions = transactionRepository.getTransactionOfType("cars");
+        assertEquals(expectedTransactions, actualTransactions);
+    }
+
 
 }

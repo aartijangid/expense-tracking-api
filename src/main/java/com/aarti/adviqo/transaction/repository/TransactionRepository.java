@@ -1,60 +1,67 @@
 package com.aarti.adviqo.transaction.repository;
 
 import com.aarti.adviqo.transaction.domain.Transaction;
+import com.aarti.adviqo.transaction.usecases.add.AddNewTransaction;
+import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
+import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
+import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
 
-import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-public class TransactionRepository {
-    Map<Long, Transaction> transactions = new HashMap<Long, Transaction>();
-    Map<Long, LinkedList> linkedTransactions = new HashMap<Long, LinkedList>();
+public class TransactionRepository implements AddNewTransaction,
+        GetTransactionById,
+        GetTransactionByType,
+        GetTotalTransactionAmount
+{
+    Map<Long, Transaction> transactions = new HashMap<>();
+    Map<Long, LinkedList<Long>> linkedTransactions = new HashMap<>();
 
-    public void add(@NotNull Transaction transaction) {
+    @Override
+    public void createTransaction(Transaction transaction) {
         transactions.put(transaction.getId(), transaction);
         if(transaction.getParentId() != 0) {
             LinkedList<Long> list;
             if(linkedTransactions.get(transaction.getParentId()) != null) {
                  list = linkedTransactions.get(transaction.getParentId());
-                list.add(transaction.getId());
             } else {
                 list = new LinkedList<>();
-                list.add(transaction.getId());
             }
+            list.add(transaction.getId());
             linkedTransactions.put(transaction.getParentId(), list);
         }
         System.out.println(transactions);
         System.out.println(linkedTransactions);
     }
 
+    @Override
     public Transaction getTransactionById(long id) {
         return transactions.get(id);
     }
 
-    public LinkedList<Long> getAllLinkedTransactions(long id) {
-        LinkedList<Long> list = new LinkedList<>();
-
-        list = getLinkedTransactions(id, list);
-
-        return list;
+    private LinkedList<Long> getAllLinkedTransactions(long id) {
+        return getLinkedTransactions(id, new LinkedList<>());
     }
 
     private LinkedList<Long> getLinkedTransactions(Long currentTransaction, LinkedList<Long> list) {
-        LinkedList<Long> childTransactions = linkedTransactions.getOrDefault(currentTransaction, new LinkedList<Long>());
-        LinkedList<Long> tempChildren = (LinkedList<Long>) childTransactions.clone();
+        LinkedList<Long> childTransactions = linkedTransactions.getOrDefault(currentTransaction, new LinkedList<>());
+        LinkedList<?> tempChildren = new LinkedList<>(childTransactions);
 
         list.add(currentTransaction);
         if(childTransactions.size() > 0) {
-            tempChildren.forEach((transaction) -> {
-                getLinkedTransactions(childTransactions.pop(), list);
-            });
+            tempChildren.forEach((transaction) -> getLinkedTransactions(childTransactions.pop(), list));
         }
 
         return list;
     }
 
-    public Double getSum(Long id) {
+    @Override
+    public Double getTransactionAmount(Long id) {
         LinkedList<Long> transactionIds = getAllLinkedTransactions(id);
-        Double sum = 0.0;
+        double sum = 0.0;
 
         for(Long currentId : transactionIds)
             sum += transactions.get(currentId).getAmount();
@@ -62,4 +69,12 @@ public class TransactionRepository {
         return sum;
     }
 
+    @Override
+    public ArrayList<Long> getTransactionOfType(String type) {
+        return (ArrayList<Long>) transactions.entrySet()
+                .stream()
+                .filter(e -> e.getValue().getType().equals(type))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
 }
