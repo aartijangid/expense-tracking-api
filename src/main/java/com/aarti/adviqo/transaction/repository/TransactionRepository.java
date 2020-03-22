@@ -5,6 +5,7 @@ import com.aarti.adviqo.transaction.usecases.add.AddNewTransaction;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
 import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Repository
 public class TransactionRepository implements AddNewTransaction,
         GetTransactionById,
         GetTransactionByType,
