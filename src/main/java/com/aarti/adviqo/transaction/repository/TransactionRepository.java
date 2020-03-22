@@ -19,12 +19,12 @@ public class TransactionRepository implements AddNewTransaction,
         GetTransactionByType,
         GetTotalTransactionAmount
 {
-    Map<Long, Transaction> transactions = new HashMap<>();
+    Map<Long, Transaction> transactionStore = new HashMap<>();
     Map<Long, LinkedList<Long>> linkedTransactions = new HashMap<>();
 
     @Override
     public void createTransaction(Transaction transaction) {
-        transactions.put(transaction.getId(), transaction);
+        transactionStore.put(transaction.getId(), transaction);
         if(transaction.getParentId() != 0) {
             LinkedList<Long> list;
             if(linkedTransactions.get(transaction.getParentId()) != null) {
@@ -35,13 +35,13 @@ public class TransactionRepository implements AddNewTransaction,
             list.add(transaction.getId());
             linkedTransactions.put(transaction.getParentId(), list);
         }
-        System.out.println(transactions);
+        System.out.println(transactionStore);
         System.out.println(linkedTransactions);
     }
 
     @Override
-    public Transaction getTransactionById(long id) {
-        return transactions.get(id);
+    public Transaction searchTransactionById(long id) {
+        return transactionStore.get(id);
     }
 
     private LinkedList<Long> getAllLinkedTransactions(long id) {
@@ -66,14 +66,14 @@ public class TransactionRepository implements AddNewTransaction,
         double sum = 0.0;
 
         for(Long currentId : transactionIds)
-            sum += transactions.get(currentId).getAmount();
+            sum += transactionStore.get(currentId).getAmount();
 
         return sum;
     }
 
     @Override
     public ArrayList<Long> getTransactionOfType(String type) {
-        return (ArrayList<Long>) transactions.entrySet()
+        return (ArrayList<Long>) transactionStore.entrySet()
                 .stream()
                 .filter(e -> e.getValue().getType().equals(type))
                 .map(Map.Entry::getKey)

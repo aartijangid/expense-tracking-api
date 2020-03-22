@@ -31,19 +31,19 @@ class TransactionRepositoryTest {
     @Test
     void addShouldSaveGivenTransactionToRepository() {
         transactionRepository.createTransaction(transaction1);
-        assertThat(transactionRepository.getTransactionById(1));
+        assertThat(transactionRepository.searchTransactionById(1));
     }
 
     @Test
     void addShouldSaveGivenTransactionWithParenId(){
         transactionRepository.createTransaction(transaction2);
-        assertThat(transactionRepository.getTransactionById(2));
+        assertThat(transactionRepository.searchTransactionById(2));
     }
 
     @Test
     void getTransactionByIdShouldReturnTransactionByGivenId(){
         transactionRepository.createTransaction(transaction1);
-        assertThat(transactionRepository.getTransactionById(1));
+        assertThat(transactionRepository.searchTransactionById(1));
     }
 
     @Test
