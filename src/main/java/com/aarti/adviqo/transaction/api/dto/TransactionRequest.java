@@ -1,4 +1,4 @@
-package com.aarti.adviqo.transaction.api;
+package com.aarti.adviqo.transaction.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

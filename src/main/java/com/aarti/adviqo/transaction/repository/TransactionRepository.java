@@ -1,5 +1,6 @@
 package com.aarti.adviqo.transaction.repository;
 
+import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.usecases.add.AddNewTransaction;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
@@ -40,8 +41,12 @@ public class TransactionRepository implements AddNewTransaction,
     }
 
     @Override
-    public Transaction searchTransactionById(long id) {
-        return transactionStore.get(id);
+    public Transaction searchTransactionById(long id) throws TransactionNotFoundException {
+        if(transactionStore.containsKey(id)){
+            return transactionStore.get(id);
+        } else
+            throw new TransactionNotFoundException();
+
     }
 
     private LinkedList<Long> getAllLinkedTransactions(long id) {

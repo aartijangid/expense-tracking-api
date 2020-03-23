@@ -2,7 +2,6 @@ package com.aarti.adviqo.transaction.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.lang.Nullable;
 
 @Data
 @AllArgsConstructor

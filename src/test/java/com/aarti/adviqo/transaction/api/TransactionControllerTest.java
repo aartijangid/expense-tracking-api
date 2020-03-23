@@ -1,5 +1,6 @@
 package com.aarti.adviqo.transaction.api;
 
+import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
@@ -91,6 +92,19 @@ class TransactionControllerTest {
         verify(getTransactionById).searchTransactionById(1L);
     }
 
+    @Test
+    void when_TransactionId_then_ShouldThrowNotFoundTransactionException() throws Exception {
+
+        given(getTransactionById.searchTransactionById(1L)).willThrow(new TransactionNotFoundException());
+
+        mockMvc.perform(get("/transactionservice/transaction/{transactionId}", 1L)
+                .accept(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isNotFound());
+
+
+    }
     @Test
     void when_Type_then_ShouldReturnTransactionDetails() throws Exception {
         given(getTransactionByType.searchTransactionOfType("cars")).willReturn(any());
