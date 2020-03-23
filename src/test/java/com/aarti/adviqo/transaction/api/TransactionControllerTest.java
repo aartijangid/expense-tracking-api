@@ -7,6 +7,7 @@ import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -89,13 +93,14 @@ class TransactionControllerTest {
 
     @Test
     void when_Type_then_ShouldReturnTransactionDetails() throws Exception {
-        Transaction transaction = new Transaction(1, 10.0,"cars" );
-        given(getTransactionById.searchTransactionById(1)).willReturn(transaction);
+        given(getTransactionByType.searchTransactionOfType("cars")).willReturn(any());
 
         mockMvc.perform(get("/transactionservice/types/{type}", "cars")
                 .accept(APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isOk());
+
+        verify(getTransactionByType).searchTransactionOfType("cars");
     }
 }
