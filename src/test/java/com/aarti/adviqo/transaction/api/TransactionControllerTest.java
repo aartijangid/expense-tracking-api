@@ -69,7 +69,7 @@ class TransactionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"status\":\"OK\"}"));
 
-        verify(saveTransactionUseCase).run(1L, "cars", 10.0, 0L);
+        verify(saveTransactionUseCase).run(1L, "cars", 10.0, 1L);
 
     }
 
