@@ -1,12 +1,8 @@
 package com.aarti.adviqo.transaction.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
 @Data
 public class TransactionRequest {
     @JsonProperty(required = true)
@@ -14,5 +10,11 @@ public class TransactionRequest {
     @JsonProperty(required = true)
     private String type;
     @JsonProperty
-    private long parentId;
+    private long parent_id;
+
+    public TransactionRequest(double amount, String type, long parent_id) {
+        this.amount = amount;
+        this.type = type;
+        this.parent_id = parent_id;
+    }
 }

@@ -40,22 +40,23 @@ public class TransactionController {
             System.out.println("transactionId -> " + transactionId
                     + " transactionRequest.getType() -> " + transactionRequest.getType()
                     + " transactionRequest.getAmount() -> "+ transactionRequest.getAmount()
-                    + " transactionRequest.getParentId() -> "+ transactionRequest.getParentId());
+                    + " transactionRequest.getParentId() -> "+ transactionRequest.getParent_id());
             saveTransactionUseCase.run(transactionId,
                     transactionRequest.getType(),
                     transactionRequest.getAmount(),
-                    transactionRequest.getParentId());
+                    transactionRequest.getParent_id());
             return new CreateTransactionResponse("OK");
         } catch (InvalidTransactionException e) {
             throw new InvalidTransactionException();
         }
     }
 
-    @GetMapping(value = "/transaction/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public GetTransactionByIdResponse getTransactionById(@PathVariable Long transactionId){
+    @GetMapping(value = "/transaction/{transaction_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public GetTransactionByIdResponse getTransactionById(@PathVariable Long transaction_id){
         try {
-            Transaction transaction = getTransactionByIdUseCase.run(transactionId);
-            return new GetTransactionByIdResponse(transaction.getAmount(), transaction.getType(), transaction.getParentId());
+            Transaction transaction = getTransactionByIdUseCase.run(transaction_id);
+            System.out.println(transaction.getParentId());
+            return new GetTransactionByIdResponse(transaction.getAmount(), transaction.getType(), java.util.Optional.of(transaction.getParentId()));
         } catch (TransactionNotFoundException e) {
             throw new NotFoundError(e.getMessage());
         }
@@ -70,10 +71,10 @@ public class TransactionController {
         }
     }
 
-    @GetMapping(value = "/sum/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public GetTotalTransactionAmountResponse getTotalTransactionAmount(@PathVariable Long transactionId){
+    @GetMapping(value = "/sum/{transaction_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public GetTotalTransactionAmountResponse getTotalTransactionAmount(@PathVariable Long transaction_id){
         try {
-            return new GetTotalTransactionAmountResponse(getTotalTransactionAmountUseCase.run(transactionId));
+            return new GetTotalTransactionAmountResponse(getTotalTransactionAmountUseCase.run(transaction_id));
         } catch (TransactionNotFoundException e) {
             throw new NotFoundError(e.getMessage());
         }

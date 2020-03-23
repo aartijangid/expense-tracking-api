@@ -8,5 +8,5 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 public class GetTransactionByTypeResponse {
-    private ArrayList<Long> transactionId;
+    private ArrayList<Long> transaction_id;
 }
