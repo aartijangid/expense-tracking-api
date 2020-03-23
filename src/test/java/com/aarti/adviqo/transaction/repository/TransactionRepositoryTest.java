@@ -70,7 +70,7 @@ class TransactionRepositoryTest {
         expectedTransactions.add((long) 4);
 
         ArrayList<Long> actualTransactions;
-        actualTransactions = transactionRepository.getTransactionOfType("cars");
+        actualTransactions = transactionRepository.searchTransactionOfType("cars");
         assertEquals(expectedTransactions, actualTransactions);
     }
 

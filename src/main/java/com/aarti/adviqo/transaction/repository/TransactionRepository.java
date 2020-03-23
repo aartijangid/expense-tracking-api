@@ -72,7 +72,7 @@ public class TransactionRepository implements AddNewTransaction,
     }
 
     @Override
-    public ArrayList<Long> getTransactionOfType(String type) {
+    public ArrayList<Long> searchTransactionOfType(String type) {
         return (ArrayList<Long>) transactionStore.entrySet()
                 .stream()
                 .filter(e -> e.getValue().getType().equals(type))
