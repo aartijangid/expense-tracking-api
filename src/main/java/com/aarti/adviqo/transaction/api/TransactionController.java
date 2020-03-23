@@ -33,15 +33,15 @@ public class TransactionController {
         this.getTotalTransactionAmountUseCase = getTotalTransactionAmountUseCase;
     }
 
-    @PutMapping(value = "/transaction/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/transaction/{transaction_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public CreateTransactionResponse addTransaction(@RequestBody TransactionRequest transactionRequest, @PathVariable Long transactionId){
+    public CreateTransactionResponse addTransaction(@RequestBody TransactionRequest transactionRequest, @PathVariable Long transaction_id){
         try {
-            System.out.println("transactionId -> " + transactionId
+            System.out.println("transactionId -> " + transaction_id
                     + " transactionRequest.getType() -> " + transactionRequest.getType()
                     + " transactionRequest.getAmount() -> "+ transactionRequest.getAmount()
                     + " transactionRequest.getParentId() -> "+ transactionRequest.getParent_id());
-            saveTransactionUseCase.run(transactionId,
+            saveTransactionUseCase.run(transaction_id,
                     transactionRequest.getType(),
                     transactionRequest.getAmount(),
                     transactionRequest.getParent_id());
