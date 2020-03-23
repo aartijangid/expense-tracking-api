@@ -1,6 +1,5 @@
 package com.aarti.adviqo.transaction.usecases.get.byType;
 
-import com.aarti.adviqo.transaction.domain.Transaction;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

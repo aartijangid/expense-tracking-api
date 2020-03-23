@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class GetTotalTransactionAmountResponse {
-    private Double sum;
+    Double sum;
 }

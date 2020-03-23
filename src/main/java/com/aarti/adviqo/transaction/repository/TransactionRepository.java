@@ -45,9 +45,7 @@ public class TransactionRepository implements AddNewTransaction,
     }
 
     private boolean isTransactionPresent(long parentId) {
-        if(transactionStore.containsKey(parentId))
-            return true;
-        return false;
+        return transactionStore.containsKey(parentId);
     }
 
     @Override
@@ -75,14 +73,18 @@ public class TransactionRepository implements AddNewTransaction,
     }
 
     @Override
-    public Double getTransactionAmount(Long id) {
+    public Double getTransactionAmount(Long id) throws TransactionNotFoundException {
         LinkedList<Long> transactionIds = getAllLinkedTransactions(id);
-        double sum = 0.0;
+        if(transactionIds.size() > 0) {
+            double sum = 0.0;
 
-        for(Long currentId : transactionIds)
-            sum += transactionStore.get(currentId).getAmount();
+            for (Long currentId : transactionIds)
+                sum += transactionStore.get(currentId).getAmount();
 
-        return sum;
+            return sum;
+        } else
+            throw new TransactionNotFoundException();
+
     }
 
     @Override

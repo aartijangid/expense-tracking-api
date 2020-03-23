@@ -37,6 +37,10 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.OK)
     public CreateTransactionResponse addTransaction(@RequestBody TransactionRequest transactionRequest, @PathVariable Long transactionId){
         try {
+            System.out.println("transactionId -> " + transactionId
+                    + " transactionRequest.getType() -> " + transactionRequest.getType()
+                    + " transactionRequest.getAmount() -> "+ transactionRequest.getAmount()
+                    + " transactionRequest.getParentId() -> "+ transactionRequest.getParentId());
             saveTransactionUseCase.run(transactionId,
                     transactionRequest.getType(),
                     transactionRequest.getAmount(),
@@ -51,7 +55,7 @@ public class TransactionController {
     public GetTransactionByIdResponse getTransactionById(@PathVariable Long transactionId){
         try {
             Transaction transaction = getTransactionByIdUseCase.run(transactionId);
-            return new GetTransactionByIdResponse(transaction.getAmount(), transaction.getType());
+            return new GetTransactionByIdResponse(transaction.getAmount(), transaction.getType(), transaction.getParentId());
         } catch (TransactionNotFoundException e) {
             throw new NotFoundError(e.getMessage());
         }
@@ -70,8 +74,8 @@ public class TransactionController {
     public GetTotalTransactionAmountResponse getTotalTransactionAmount(@PathVariable Long transactionId){
         try {
             return new GetTotalTransactionAmountResponse(getTotalTransactionAmountUseCase.run(transactionId));
-        } catch (Exception e) {
-            throw e;
+        } catch (TransactionNotFoundException e) {
+            throw new NotFoundError(e.getMessage());
         }
     }
 }

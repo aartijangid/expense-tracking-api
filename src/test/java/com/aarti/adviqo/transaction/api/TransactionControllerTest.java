@@ -1,20 +1,15 @@
 package com.aarti.adviqo.transaction.api;
 
-import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.domain.Transaction;
+import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
-import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionByIdUseCase;
-import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByTypeUseCase;
-import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
 import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmountUseCase;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,8 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = TransactionController.class)
 @ExtendWith(SpringExtension.class)
-//@SpringBootTest
-//@AutoConfigureMockMvc
 class TransactionControllerTest {
 
     @MockBean
@@ -46,11 +39,9 @@ class TransactionControllerTest {
 
     @MockBean
     private GetTotalTransactionAmountUseCase getTotalTransactionAmountUseCase;
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private MockMvc mockMvc;
 
     @Test
     void when_TransactionWithoutParentId_then_ShouldReturnOk() throws Exception {
