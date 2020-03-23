@@ -1,12 +1,14 @@
 package com.aarti.adviqo.transaction.api;
 
 import com.aarti.adviqo.transaction.api.dto.CreateTransactionResponse;
+import com.aarti.adviqo.transaction.api.dto.GetTotalTransactionAmountResponse;
 import com.aarti.adviqo.transaction.api.dto.GetTransactionByIdResponse;
 import com.aarti.adviqo.transaction.api.dto.GetTransactionByTypeResponse;
 import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
+import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +22,17 @@ public class TransactionController {
     private SaveTransactionUseCase saveTransactionUseCase;
     private GetTransactionById getTransactionById;
     private GetTransactionByType getTransactionByType;
+    private GetTotalTransactionAmount getTotalTransactionAmount;
 
-    public TransactionController(SaveTransactionUseCase saveTransactionUseCase, GetTransactionById getTransactionById, GetTransactionByType getTransactionByType) {
+    public TransactionController(SaveTransactionUseCase saveTransactionUseCase,
+                                 GetTransactionById getTransactionById,
+                                 GetTransactionByType getTransactionByType,
+                                 GetTotalTransactionAmount getTotalTransactionAmount
+    ) {
         this.saveTransactionUseCase = saveTransactionUseCase;
         this.getTransactionById = getTransactionById;
         this.getTransactionByType = getTransactionByType;
+        this.getTotalTransactionAmount = getTotalTransactionAmount;
     }
 
     @PutMapping(value = "/transaction/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,8 +60,16 @@ public class TransactionController {
     @GetMapping(value = "/types/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
     public GetTransactionByTypeResponse getTransactionByType(@PathVariable String type) {
         try {
-            ArrayList<Long> transactions = getTransactionByType.searchTransactionOfType(type);
-            return new GetTransactionByTypeResponse(transactions);
+            return new GetTransactionByTypeResponse(getTransactionByType.searchTransactionOfType(type));
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @GetMapping(value = "/sum/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public GetTotalTransactionAmountResponse getTotalTransactionAmount(@PathVariable Long transactionId){
+        try {
+            return new GetTotalTransactionAmountResponse(getTotalTransactionAmount.getTransactionAmount(transactionId));
         } catch (Exception e) {
             throw e;
         }

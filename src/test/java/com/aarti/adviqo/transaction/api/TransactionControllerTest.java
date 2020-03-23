@@ -4,18 +4,16 @@ import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
+import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -41,6 +39,8 @@ class TransactionControllerTest {
     @MockBean
     private GetTransactionByType getTransactionByType;
 
+    @MockBean
+    private GetTotalTransactionAmount getTotalTransactionAmount;
     @Autowired
     private MockMvc mockMvc;
 
@@ -102,5 +102,18 @@ class TransactionControllerTest {
                 .andExpect(status().isOk());
 
         verify(getTransactionByType).searchTransactionOfType("cars");
+    }
+
+    @Test
+    void when_TransactionId_then_ShouldReturnSumOfAllTransactions() throws Exception {
+        given(getTotalTransactionAmount.getTransactionAmount(1L)).willReturn(50D);
+
+        mockMvc.perform(get("/transactionservice/sum/{transactionId}", 1L)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isOk());
+
+        verify(getTotalTransactionAmount).getTransactionAmount(1L);
     }
 }
