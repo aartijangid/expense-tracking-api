@@ -4,7 +4,6 @@
 We would like to have a RESTful web service that stores some transactions (in memory is fine) and returns information about those transactions.
 
 The transactions to be stored have a type and an amount. The service should support return- ing all transactions of a type. Also, transactions can be linked to each other (using a "par- ent_id") and we need to know the total amount involved for all transactions linked to a particular transaction.
-In general we are looking for a good implementation, code quality and how the implementation is tested.
 
 ## How to install?
 1. Make sure you have java 8(or higher version) installed on your systems
