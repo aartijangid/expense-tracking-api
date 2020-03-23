@@ -4,13 +4,17 @@ import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundExce
 import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
+import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionByIdUseCase;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
+import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByTypeUseCase;
 import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
+import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmountUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,13 +39,13 @@ class TransactionControllerTest {
     private SaveTransactionUseCase saveTransactionUseCase;
 
     @MockBean
-    private GetTransactionById getTransactionById;
+    private GetTransactionByIdUseCase getTransactionByIdUseCase;
 
     @MockBean
-    private GetTransactionByType getTransactionByType;
+    private GetTransactionByTypeUseCase getTransactionByTypeUseCase;
 
     @MockBean
-    private GetTotalTransactionAmount getTotalTransactionAmount;
+    private GetTotalTransactionAmountUseCase getTotalTransactionAmountUseCase;
     @Autowired
     private MockMvc mockMvc;
 
@@ -59,7 +63,7 @@ class TransactionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"status\":\"OK\"}"));
 
-        verify(saveTransactionUseCase).saveTransaction(1L, "cars", 10.0, 0L);
+        verify(saveTransactionUseCase).run(1L, "cars", 10.0, 0L);
 
     }
 
@@ -74,14 +78,14 @@ class TransactionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"status\":\"OK\"}"));
 
-        verify(saveTransactionUseCase).saveTransaction(1L, "cars", 10.0, 0L);
+        verify(saveTransactionUseCase).run(1L, "cars", 10.0, 0L);
 
     }
 
     @Test
     void when_TransactionId_then_ShouldReturnTransactionDetails() throws Exception {
         Transaction transaction = new Transaction(1, 10.0,"cars" );
-        given(getTransactionById.searchTransactionById(1)).willReturn(transaction);
+        given(getTransactionByIdUseCase.run(1)).willReturn(transaction);
 
         mockMvc.perform(get("/transactionservice/transaction/{transactionId}", 1)
                 .accept(APPLICATION_JSON)
@@ -89,13 +93,13 @@ class TransactionControllerTest {
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isOk());
 
-        verify(getTransactionById).searchTransactionById(1L);
+        verify(getTransactionByIdUseCase).run(1L);
     }
 
     @Test
     void when_TransactionId_then_ShouldThrowNotFoundTransactionException() throws Exception {
 
-        given(getTransactionById.searchTransactionById(1L)).willThrow(new TransactionNotFoundException());
+        given(getTransactionByIdUseCase.run(1L)).willThrow(new TransactionNotFoundException());
 
         mockMvc.perform(get("/transactionservice/transaction/{transactionId}", 1L)
                 .accept(APPLICATION_JSON)
@@ -108,7 +112,7 @@ class TransactionControllerTest {
 
     @Test
     void when_Type_then_ShouldReturnTransactionDetails() throws Exception {
-        given(getTransactionByType.searchTransactionOfType("cars")).willReturn(any());
+        given(getTransactionByTypeUseCase.run("cars")).willReturn(any());
 
         mockMvc.perform(get("/transactionservice/types/{type}", "cars")
                 .accept(APPLICATION_JSON)
@@ -116,13 +120,13 @@ class TransactionControllerTest {
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isOk());
 
-        verify(getTransactionByType).searchTransactionOfType("cars");
+        verify(getTransactionByTypeUseCase).run("cars");
     }
 
     @Test
     void when_Type_then_ShouldThrowNotFoundTransactionException() throws Exception {
 
-        given(getTransactionByType.searchTransactionOfType("cars")).willThrow(new TransactionNotFoundException());
+        given(getTransactionByTypeUseCase.run("cars")).willThrow(new TransactionNotFoundException());
 
         mockMvc.perform(get("/transactionservice/types/{type}", "cars")
                 .accept(APPLICATION_JSON)
@@ -133,7 +137,7 @@ class TransactionControllerTest {
 
     @Test
     void when_TransactionId_then_ShouldReturnSumOfAllTransactions() throws Exception {
-        given(getTotalTransactionAmount.getTransactionAmount(1L)).willReturn(50D);
+        given(getTotalTransactionAmountUseCase.run(1L)).willReturn(50D);
 
         mockMvc.perform(get("/transactionservice/sum/{transactionId}", 1L)
                 .accept(APPLICATION_JSON)
@@ -141,6 +145,6 @@ class TransactionControllerTest {
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isOk());
 
-        verify(getTotalTransactionAmount).getTransactionAmount(1L);
+        verify(getTotalTransactionAmountUseCase).run(1L);
     }
 }

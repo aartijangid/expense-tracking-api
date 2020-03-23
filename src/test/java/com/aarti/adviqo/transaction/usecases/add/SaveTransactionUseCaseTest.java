@@ -29,7 +29,7 @@ class SaveTransactionUseCaseTest {
         Transaction transaction = new Transaction(1, 10.0, "cars");
         doNothing().when(addNewTransaction).createTransaction(any());
 
-        saveTransactionUseCase.saveTransaction((long)1, "cars", 10.0, (long) 1);
+        saveTransactionUseCase.run((long)1, "cars", 10.0, (long) 1);
         verify(addNewTransaction).createTransaction(any());
 
     }

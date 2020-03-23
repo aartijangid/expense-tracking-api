@@ -11,7 +11,7 @@ public class SaveTransactionUseCase {
         this.addNewTransaction = addNewTransaction;
     }
 
-    public void saveTransaction(Long id, String type, double amount, Long parentId) {
+    public void run(Long id, String type, double amount, Long parentId) {
         Transaction newTransaction = new Transaction(id, amount, type, parentId);
         addNewTransaction.createTransaction(newTransaction);
     }

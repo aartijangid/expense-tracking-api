@@ -6,9 +6,9 @@ import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.repository.exception.InvalidTransactionException;
 import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
-import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
-import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
-import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmount;
+import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionByIdUseCase;
+import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByTypeUseCase;
+import com.aarti.adviqo.transaction.usecases.get.sum.GetTotalTransactionAmountUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,26 +18,26 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
 
     private SaveTransactionUseCase saveTransactionUseCase;
-    private GetTransactionById getTransactionById;
-    private GetTransactionByType getTransactionByType;
-    private GetTotalTransactionAmount getTotalTransactionAmount;
+    private GetTransactionByIdUseCase getTransactionByIdUseCase;
+    private GetTransactionByTypeUseCase getTransactionByTypeUseCase;
+    private GetTotalTransactionAmountUseCase getTotalTransactionAmountUseCase;
 
     public TransactionController(SaveTransactionUseCase saveTransactionUseCase,
-                                 GetTransactionById getTransactionById,
-                                 GetTransactionByType getTransactionByType,
-                                 GetTotalTransactionAmount getTotalTransactionAmount
+                                 GetTransactionByIdUseCase getTransactionByIdUseCase,
+                                 GetTransactionByTypeUseCase getTransactionByTypeUseCase,
+                                 GetTotalTransactionAmountUseCase getTotalTransactionAmountUseCase
     ) {
         this.saveTransactionUseCase = saveTransactionUseCase;
-        this.getTransactionById = getTransactionById;
-        this.getTransactionByType = getTransactionByType;
-        this.getTotalTransactionAmount = getTotalTransactionAmount;
+        this.getTransactionByIdUseCase = getTransactionByIdUseCase;
+        this.getTransactionByTypeUseCase = getTransactionByTypeUseCase;
+        this.getTotalTransactionAmountUseCase = getTotalTransactionAmountUseCase;
     }
 
     @PutMapping(value = "/transaction/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public CreateTransactionResponse addTransaction(@RequestBody TransactionRequest transactionRequest, @PathVariable Long transactionId){
         try {
-            saveTransactionUseCase.saveTransaction(transactionId,
+            saveTransactionUseCase.run(transactionId,
                     transactionRequest.getType(),
                     transactionRequest.getAmount(),
                     transactionRequest.getParentId());
@@ -50,7 +50,7 @@ public class TransactionController {
     @GetMapping(value = "/transaction/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public GetTransactionByIdResponse getTransactionById(@PathVariable Long transactionId){
         try {
-            Transaction transaction = getTransactionById.searchTransactionById(transactionId);
+            Transaction transaction = getTransactionByIdUseCase.run(transactionId);
             return new GetTransactionByIdResponse(transaction.getAmount(), transaction.getType());
         } catch (TransactionNotFoundException e) {
             throw new NotFoundError(e.getMessage());
@@ -60,7 +60,7 @@ public class TransactionController {
     @GetMapping(value = "/types/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
     public GetTransactionByTypeResponse getTransactionByType(@PathVariable String type) {
         try {
-            return new GetTransactionByTypeResponse(getTransactionByType.searchTransactionOfType(type));
+            return new GetTransactionByTypeResponse(getTransactionByTypeUseCase.run(type));
         } catch (TransactionNotFoundException e) {
             throw new NotFoundError(e.getMessage());
         }
@@ -69,7 +69,7 @@ public class TransactionController {
     @GetMapping(value = "/sum/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public GetTotalTransactionAmountResponse getTotalTransactionAmount(@PathVariable Long transactionId){
         try {
-            return new GetTotalTransactionAmountResponse(getTotalTransactionAmount.getTransactionAmount(transactionId));
+            return new GetTotalTransactionAmountResponse(getTotalTransactionAmountUseCase.run(transactionId));
         } catch (Exception e) {
             throw e;
         }
