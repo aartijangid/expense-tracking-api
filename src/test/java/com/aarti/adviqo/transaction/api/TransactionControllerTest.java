@@ -105,6 +105,7 @@ class TransactionControllerTest {
 
 
     }
+
     @Test
     void when_Type_then_ShouldReturnTransactionDetails() throws Exception {
         given(getTransactionByType.searchTransactionOfType("cars")).willReturn(any());
@@ -116,6 +117,18 @@ class TransactionControllerTest {
                 .andExpect(status().isOk());
 
         verify(getTransactionByType).searchTransactionOfType("cars");
+    }
+
+    @Test
+    void when_Type_then_ShouldThrowNotFoundTransactionException() throws Exception {
+
+        given(getTransactionByType.searchTransactionOfType("cars")).willThrow(new TransactionNotFoundException());
+
+        mockMvc.perform(get("/transactionservice/types/{type}", "cars")
+                .accept(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

@@ -1,7 +1,8 @@
 package com.aarti.adviqo.transaction.repository;
 
-import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.domain.Transaction;
+import com.aarti.adviqo.transaction.repository.exception.ParentTransactionNotFound;
+import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
 import com.aarti.adviqo.transaction.usecases.add.AddNewTransaction;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
@@ -24,20 +25,29 @@ public class TransactionRepository implements AddNewTransaction,
     Map<Long, LinkedList<Long>> linkedTransactions = new HashMap<>();
 
     @Override
-    public void createTransaction(Transaction transaction) {
-        transactionStore.put(transaction.getId(), transaction);
-        if(transaction.getParentId() != 0) {
-            LinkedList<Long> list;
-            if(linkedTransactions.get(transaction.getParentId()) != null) {
-                 list = linkedTransactions.get(transaction.getParentId());
-            } else {
-                list = new LinkedList<>();
-            }
-            list.add(transaction.getId());
-            linkedTransactions.put(transaction.getParentId(), list);
+    public void createTransaction(Transaction transaction) throws ParentTransactionNotFound {
+        if(transaction.getParentId() != 0){
+            if(isTransactionPresent(transaction.getParentId())){
+                if(transaction.getParentId() != 0) {
+                    LinkedList<Long> list;
+                    if(linkedTransactions.get(transaction.getParentId()) != null) {
+                        list = linkedTransactions.get(transaction.getParentId());
+                    } else {
+                        list = new LinkedList<>();
+                    }
+                    list.add(transaction.getId());
+                    linkedTransactions.put(transaction.getParentId(), list);
+                }
+            }else
+                throw new ParentTransactionNotFound();
         }
-        System.out.println(transactionStore);
-        System.out.println(linkedTransactions);
+        transactionStore.put(transaction.getId(), transaction);
+    }
+
+    private boolean isTransactionPresent(long parentId) {
+        if(transactionStore.containsKey(parentId))
+            return true;
+        return false;
     }
 
     @Override
@@ -61,7 +71,6 @@ public class TransactionRepository implements AddNewTransaction,
         if(childTransactions.size() > 0) {
             tempChildren.forEach((transaction) -> getLinkedTransactions(childTransactions.pop(), list));
         }
-
         return list;
     }
 
@@ -77,7 +86,7 @@ public class TransactionRepository implements AddNewTransaction,
     }
 
     @Override
-    public ArrayList<Long> searchTransactionOfType(String type) {
+    public ArrayList<Long> searchTransactionOfType(String type) throws TransactionNotFoundException{
         return (ArrayList<Long>) transactionStore.entrySet()
                 .stream()
                 .filter(e -> e.getValue().getType().equals(type))

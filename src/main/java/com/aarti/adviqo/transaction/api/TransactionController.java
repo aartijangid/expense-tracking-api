@@ -2,9 +2,9 @@ package com.aarti.adviqo.transaction.api;
 
 import com.aarti.adviqo.transaction.api.dto.*;
 import com.aarti.adviqo.transaction.api.exception.NotFoundError;
+import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.repository.exception.InvalidTransactionException;
 import com.aarti.adviqo.transaction.repository.exception.TransactionNotFoundException;
-import com.aarti.adviqo.transaction.domain.Transaction;
 import com.aarti.adviqo.transaction.usecases.add.SaveTransactionUseCase;
 import com.aarti.adviqo.transaction.usecases.get.byId.GetTransactionById;
 import com.aarti.adviqo.transaction.usecases.get.byType.GetTransactionByType;
@@ -61,8 +61,8 @@ public class TransactionController {
     public GetTransactionByTypeResponse getTransactionByType(@PathVariable String type) {
         try {
             return new GetTransactionByTypeResponse(getTransactionByType.searchTransactionOfType(type));
-        } catch (Exception e) {
-            throw e;
+        } catch (TransactionNotFoundException e) {
+            throw new NotFoundError(e.getMessage());
         }
     }
 
