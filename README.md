@@ -1,4 +1,4 @@
-# Adviqo Transaction Service
+## Transaction Service
 
 ## Story
 We would like to have a RESTful web service that stores some transactions (in memory is fine) and returns information about those transactions.
