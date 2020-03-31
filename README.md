@@ -1,4 +1,22 @@
-## Transaction Service
+## Expense Tracking Service/APIs
+    The transactions to be stored have a type and an amount. 
+    The service should support returning all transactions of a type. 
+    Transactions can be linked to each other using a "parent_id". 
+    Should get total amount involved for all transactions linked to a particular transaction.
+
+## API specs
+PUT /transactionservice/transaction/$transaction_id
+Body: { "amount":double,"type":string,"parent_id":long }
+Returns: {"status": "ok" }
+
+GET /transactionservice/transaction/$transaction_id
+Returns: { "amount":double,"type":string,"parent_id":long }
+
+GET /transactionservice/types/$type
+Returns: [ long, long, .... ]
+
+GET /transactionservice/sum/$transaction_id
+Returns { "sum", double }
 
 ## Story
 We would like to have a RESTful web service that stores some transactions (in memory is fine) and returns information about those transactions.
@@ -31,3 +49,18 @@ Test Driven Development(TDD)
 
 ## DataStore Options
 NoSQL Database like Redis can also be used for in-memory data-store.
+
+## Sample Input/Output
+    PUT: 
+    input:  /transactionservice/transaction/10 { "amount": 5000, "type": "cars" }
+    output: {"status": "ok" }
+
+    input:  /transactionservice/transaction/11 { "amount": 10000, "type": "shopping", "parent_id":10}
+    output: {"status": "ok" }
+    
+    input:  GET /transactionservice/types/cars 
+    output: [10] 
+    input: GET /transactionservice/sum/10 
+    output: {"sum":15000} 
+    input: GET  /transactionservice/sum/11 
+    output: {"sum":10000}
